@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Document</title>
+</head>
+
+<body>
+  <button onclick="sendData()">Send Data</button>
+</body>
+<script src="/server.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.3.0/socket.io.dev.js"></script>
+<script>
+  const socket = io()
+  const run = () => {
+    socket.emit("save", {
+      testId: "my Test Id",
+      testName: "My Test Name",
+    })
+  }
+
+
+  const test = () => {
+    socket.on("test", data => {
+      console.log(data)
+    })
+  }
+
+  const sendData = () => {
+    const data = { body: { testId: 1, testName: "Hassan" } };
+    console.log('client emitting', data);
+
+    socket.emit("save", data)
+  }
+
+  test()
+</script>
+
+</html>

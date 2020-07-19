@@ -1,15 +1,16 @@
 const bodyParser = require('body-parser');
 
-module.exports = app => {
+module.exports = (app,httpsServer) => {
 	app.use(bodyParser.json());
 
 	require('../db/conn');
 	require('../routes/Test.js')(app);
+	require('../routes/potentialPatientAPI')(app,httpsServer);
+
 	require('../routes/cleanerAPI')(app);
 	require('../routes/contactListAPI.js')(app);
 	require('../routes/noteAPI')(app);
 	require('../routes/propertyManagerAPI')(app);
-	require('../routes/potentialPatientAPI')(app);
 	require('../routes/thresholdAPI')(app);
 	require('../routes/twilioAPI')(app);
 
