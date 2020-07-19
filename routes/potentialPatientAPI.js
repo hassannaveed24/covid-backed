@@ -16,6 +16,7 @@ module.exports = async (app,httpsServer) => {
         }        
     })
 
+    //called by resberry pie, and this api will notify clients about newer data
     app.post('/savePotentialCase', async function(req, res){
         try{
             const potentialPatient = new potentialPatient_Schema(req.body);
