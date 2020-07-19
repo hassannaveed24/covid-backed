@@ -1,12 +1,18 @@
 const mongoose = require('mongoose');
+const config = require ('../config');
 
-const db = "mongodb+srv://posuser:1234@posdb-0yxjw.mongodb.net/dca?retryWrites=true&w=majority";
+const db = config.app.CONN;
 
-mongoose.connect(db, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-    useCreateIndex: true,
-  })
-  .then(() => 
-      console.log("Connected to MongoDB..")
-  ).catch(err => console.log(err));
+try{
+    mongoose.connect(db, {
+        useNewUrlParser: true,
+        useUnifiedTopology: true,
+        useCreateIndex: true,
+      })
+      .then(() => 
+          console.log("Connected to MongoDB..")
+      ).catch(err => console.log(err));
+}catch(err){
+    console.log(err);
+}
+
