@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
+const config = require("../config/config");
 
-const potentialPatient_Schema = mongoose.model('potentialPatient', new mongoose.Schema({
+const ticket = mongoose.model('ticket', new mongoose.Schema({
     imageURL: String,
     floor: String,
     location: {
@@ -17,8 +18,9 @@ const potentialPatient_Schema = mongoose.model('potentialPatient', new mongoose.
         oxymeter: String
     },
     user_id: String,
-
-
+    ticketId: String,
+    Property: { type: String, default: config.propertyDetails.PropertyName },
+    status: {type: String, enum:["new", "openned", "close"], default:"new"}
 }));
 
-module.exports = potentialPatient_Schema;
+module.exports = ticket;
