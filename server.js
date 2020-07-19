@@ -153,9 +153,15 @@ async function runHttpsServer() {
 		httpsServer.listen(
 			Number(config.https.listenPort), config.https.listenIp, resolve);
 
-		console.log(colors.green(`Https Server Started at ${config.https.listenPort}`))
-		require('./startup/routes.js')(app,httpsServer);
-		require('./sockets.js').test(httpsServer);
+		console.log(colors.green(`Https Server Started at ${config.https.listenPort}`));
+		const io = require("socket.io")(httpsServer, {
+			transports: ["websocket", "polling"],
+		});
+		io.on('connection', (client) => {
+			require('./sockets.js').test(client);
+		})
+		require('./startup/routes.js')(app, httpsServer);
+		
 	});
 }
 
