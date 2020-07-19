@@ -23,6 +23,7 @@ const Room = require('./lib/Room');
 const interactiveServer = require('./lib/interactiveServer');
 const interactiveClient = require('./lib/interactiveClient');
 const colors = require('colors');
+const path = require('path');
 
 const logger = new Logger();
 
@@ -154,6 +155,9 @@ async function runHttpsServer() {
 			Number(config.https.listenPort), config.https.listenIp, resolve);
 
 		console.log(colors.green(`Https Server Started at ${config.https.listenPort}`));
+		var dir = path.join(__dirname, 'public');
+
+		app.use(express.static(dir));
 		const io = require("socket.io")(httpsServer, {
 			transports: ["websocket", "polling"],
 		});
