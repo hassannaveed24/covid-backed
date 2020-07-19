@@ -160,7 +160,7 @@ async function runHttpsServer() {
 		io.on('connection', (client) => {
 			require('./sockets.js').test(client);
 		})
-		require('./startup/routes.js')(app, httpsServer);
+		require('./startup/routes.js')(app, io);
 		
 	});
 }

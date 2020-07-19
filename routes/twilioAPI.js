@@ -5,28 +5,21 @@ const cleaner_Schema = require('../models/cleanerModel');
 module.exports = app => {
     app.get('/sendmessage/:type/:entranceName', async (req, res) => {
         try {
+            let phoneNumber = []
             if (req.params.type == "SecurityTeam") {
                 const security = await cleaner_Schema.find({ role: "Security Team" }, { phoneNumber: 1 }).lean();
-
-                let phoneNumber = security.map((ele) => ele.phoneNumber)
-               // let phoneNumber = security[0].phoneNumber.toString();
-
-                client.messages.create({
-                    to: phoneNumber,
-                    from: '+15713843536',
-                    body: `Potential case suspected at ${req.params.entranceName}`
-                }).then(() => res.status(200).send('Message has been Sent.'))
-
+                phoneNumber = security.map((ele) => ele.phoneNumber)
             } else if (req.body.type == "CleaningTeam") {
-                const cleaning = await cleaner_Schema.find({ role: "Cleaning Team", _id: req.params.id }, { phoneNumber: 1 });
-                let phoneNumber = cleaning[0].phoneNumber.toString();
-
-                client.messages.create({
-                    to: phoneNumber,
-                    from: '+15713843536',
-                    body: `Potential case suspected at ${req.params.entranceName}`
-                }).then(() => res.status(200).send('Message has been Sent.'))
+                const cleaning = await cleaner_Schema.find({ role: "Cleaning Team" }, { phoneNumber: 1 });
+                phoneNumber = cleaning.map((ele) => ele.phoneNumber)
             }
+            client.messages.create({
+                to: phoneNumber,
+                from: '+15713843536',
+                body: `Potential case suspected at ${req.params.entranceName}`
+            })
+                .then(() => res.status(200).send('Message has been Sent.'))
+                .catch((err) => res.status(406).send(err))
         } catch (err) {
             res.status(406).send(err)
         }
