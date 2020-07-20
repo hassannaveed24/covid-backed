@@ -155,9 +155,9 @@ async function runHttpsServer() {
 			Number(config.https.listenPort), config.https.listenIp, resolve);
 
 		console.log(colors.green(`Https Server Started at ${config.https.listenPort}`));
-		var dir = path.join(__dirname, 'public');
+		// var dir = path.join(__dirname, 'public');
 
-		app.use(express.static(dir));
+		// app.use(express.static(dir));
 		const io = require("socket.io")(httpsServer, {
 			transports: ["websocket", "polling"],
 		});
