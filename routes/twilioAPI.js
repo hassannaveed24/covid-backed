@@ -9,7 +9,7 @@ module.exports = app => {
             if (req.params.type == "SecurityTeam") {
                 const security = await cleaner_Schema.find({ role: "Security Team" }, { phoneNumber: 1 }).lean();
                 phoneNumber = security.map((ele) => ele.phoneNumber)
-            } else if (req.body.type == "CleaningTeam") {
+            } else if (req.params.type == "CleaningTeam") {
                 const cleaning = await cleaner_Schema.find({ role: "Cleaning Team" }, { phoneNumber: 1 });
                 phoneNumber = cleaning.map((ele) => ele.phoneNumber)
             }
