@@ -1,4 +1,5 @@
 const propertyManager_Schema = require('../models/propertyManagerModel');
+const bcrypt = require('bcrypt');
 
 module.exports = app => {
     app.post('/addPropertyManager',async function(req,res){
