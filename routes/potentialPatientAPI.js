@@ -22,7 +22,7 @@ module.exports = async (app, io) => {
       const potentialPatient = new ticket(req.body);
       const record = await potentialPatient.save();
       res.status(200).send(record);
-      io.sockets.emit("broadcastPotentialPatient", record);
+      // io.sockets.emit("broadcastPotentialPatient", record);
     } catch (err) {
       res.status(406).send(err);
     }
