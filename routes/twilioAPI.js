@@ -17,7 +17,7 @@ module.exports = (app) => {
           .lean();
         phoneNumbers = cleaning.map((ele) => ele.phoneNumber);
       }
-      console.log(phoneNumbers);
+      // console.log(phoneNumbers);
       //   Promise.all(
       //     phoneNumbers.map((number) => {
       //       client.messages
@@ -31,11 +31,11 @@ module.exports = (app) => {
       //     })
       //   );
 
-      phoneNumbers.map((number) => {
-        console.log(number);
-      });
+      // phoneNumbers.map((number) => {
+      //   console.log(number);
+      // });
 
-      phoneNumbers = ["+923415615279", "+923415615279"];
+      
 
       Promise.all(
         phoneNumbers.map((number) => {
@@ -53,7 +53,7 @@ module.exports = (app) => {
         })
         .catch((err) => {
           console.error(err);
-          res.status(200).send(err);
+          res.status(406).send(err);
         });
     } catch (err) {
       res.status(406).send(err);
