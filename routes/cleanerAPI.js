@@ -37,7 +37,7 @@ module.exports = (app) => {
           });
       }
     } catch (err) {
-      console.log(err);
+      res.status(406).send(err);
     }
   });
 
@@ -47,7 +47,7 @@ module.exports = (app) => {
       cleaner = await cleaner_Schema.find({}, function (err, cleaner) {});
       res.send(cleaner);
     } catch (err) {
-      console.log(err);
+      res.status(406).send(err);
     }
   });
   app.get("/viewOneCleaner/:_id", async function (req, res) {
@@ -61,7 +61,7 @@ module.exports = (app) => {
       ) {});
       res.send(cleaner);
     } catch (err) {
-      console.log(err);
+      res.status(406).send(err);
     }
   });
 
@@ -86,7 +86,7 @@ module.exports = (app) => {
         }
       });
     } catch (err) {
-      console.log(err);
+      res.status(406).send(err);
     }
   });
 

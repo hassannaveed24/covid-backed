@@ -1,29 +1,29 @@
 #!/usr/bin/env node
 
-process.title = 'mediasoup-demo-server';
-process.env.DEBUG = process.env.DEBUG || '*INFO* *WARN* *ERROR*';
+process.title = "mediasoup-demo-server";
+process.env.DEBUG = process.env.DEBUG || "*INFO* *WARN* *ERROR*";
 
-const config = require('./config');
+const config = require("./config");
 
 /* eslint-disable no-console */
-console.log('process.env.DEBUG:', process.env.DEBUG);
-console.log('config.js:\n%s', JSON.stringify(config, null, '  '));
+console.log("process.env.DEBUG:", process.env.DEBUG);
+console.log("config.js:\n%s", JSON.stringify(config, null, "  "));
 /* eslint-enable no-console */
 
-const fs = require('fs');
-const https = require('https');
-const url = require('url');
-const protoo = require('protoo-server');
-const mediasoup = require('mediasoup');
-const express = require('express');
-const { AwaitQueue } = require('awaitqueue');
-const cors = require('cors');
-const Logger = require('./lib/Logger');
-const Room = require('./lib/Room');
-const interactiveServer = require('./lib/interactiveServer');
-const interactiveClient = require('./lib/interactiveClient');
-const colors = require('colors');
-const path = require('path');
+const fs = require("fs");
+const https = require("https");
+const url = require("url");
+const protoo = require("protoo-server");
+const mediasoup = require("mediasoup");
+const express = require("express");
+const { AwaitQueue } = require("awaitqueue");
+const cors = require("cors");
+const Logger = require("./lib/Logger");
+const Room = require("./lib/Room");
+const interactiveServer = require("./lib/interactiveServer");
+const interactiveClient = require("./lib/interactiveClient");
+const colors = require("colors");
+const path = require("path");
 
 const logger = new Logger();
 
@@ -58,80 +58,83 @@ let nextMediasoupWorkerIdx = 0;
 run();
 
 async function run() {
-	// Open the interactive server.
-	await interactiveServer();
+  // Open the interactive server.
+  await interactiveServer();
 
-	// Open the interactive client.
-	if (process.env.INTERACTIVE === 'true' || process.env.INTERACTIVE === '1')
-		await interactiveClient();
+  // Open the interactive client.
+  if (process.env.INTERACTIVE === "true" || process.env.INTERACTIVE === "1")
+    await interactiveClient();
 
-	// Run a mediasoup Worker.
-	await runMediasoupWorkers();
+  // Run a mediasoup Worker.
+  await runMediasoupWorkers();
 
-	// Create Express app.
-	await createExpressApp();
+  // Create Express app.
+  await createExpressApp();
 
-	// Run HTTPS server.
-	await runHttpsServer();
+  // Run HTTPS server.
+  await runHttpsServer();
 
-	// Run a protoo WebSocketServer.
-	await runProtooWebSocketServer();
+  // Run a protoo WebSocketServer.
+  await runProtooWebSocketServer();
 
-	// Log rooms status every X seconds.
-	setInterval(() => {
-		for (const room of rooms.values()) {
-			room.logStatus();
-		}
-	}, 120000);
+  // Log rooms status every X seconds.
+  setInterval(() => {
+    for (const room of rooms.values()) {
+      room.logStatus();
+    }
+  }, 120000);
 }
 
 /**
  * Launch as many mediasoup Workers as given in the configuration file.
  */
 async function runMediasoupWorkers() {
-	const { numWorkers } = config.mediasoup;
+  const { numWorkers } = config.mediasoup;
 
-	logger.info('running %d mediasoup Workers...', numWorkers);
+  logger.info("running %d mediasoup Workers...", numWorkers);
 
-	for (let i = 0; i < numWorkers; ++i) {
-		const worker = await mediasoup.createWorker(
-			{
-				logLevel: config.mediasoup.workerSettings.logLevel,
-				logTags: config.mediasoup.workerSettings.logTags,
-				rtcMinPort: Number(config.mediasoup.workerSettings.rtcMinPort),
-				rtcMaxPort: Number(config.mediasoup.workerSettings.rtcMaxPort)
-			});
+  for (let i = 0; i < numWorkers; ++i) {
+    const worker = await mediasoup.createWorker({
+      logLevel: config.mediasoup.workerSettings.logLevel,
+      logTags: config.mediasoup.workerSettings.logTags,
+      rtcMinPort: Number(config.mediasoup.workerSettings.rtcMinPort),
+      rtcMaxPort: Number(config.mediasoup.workerSettings.rtcMaxPort),
+    });
 
-		worker.on('died', () => {
-			logger.error(
-				'mediasoup Worker died, exiting  in 2 seconds... [pid:%d]', worker.pid);
+    worker.on("died", () => {
+      logger.error(
+        "mediasoup Worker died, exiting  in 2 seconds... [pid:%d]",
+        worker.pid
+      );
 
-			setTimeout(() => process.exit(1), 2000);
-		});
+      setTimeout(() => process.exit(1), 2000);
+    });
 
-		mediasoupWorkers.push(worker);
+    mediasoupWorkers.push(worker);
 
-		// Log worker resource usage every X seconds.
-		setInterval(async () => {
-			const usage = await worker.getResourceUsage();
+    // Log worker resource usage every X seconds.
+    setInterval(async () => {
+      const usage = await worker.getResourceUsage();
 
-			logger.info('mediasoup Worker resource usage [pid:%d]: %o', worker.pid, usage);
-		}, 120000);
-	}
+      logger.info(
+        "mediasoup Worker resource usage [pid:%d]: %o",
+        worker.pid,
+        usage
+      );
+    }, 120000);
+  }
 }
 
 /**
  * Create an Express based API server to manage Broadcaster requests.
  */
 async function createExpressApp() {
-	logger.info('creating Express app...');
-	app = express();
-	app.use(cors());
-	app.options('*', cors());
+  logger.info("creating Express app...");
+  app = express();
+  app.use(cors());
+  app.options("*", cors());
 
-
-
-	console.log('next');
+  console.log("next");
 }
 
 /**
@@ -139,119 +142,126 @@ async function createExpressApp() {
  * configuration file and reuses the Express application as request listener.
  */
 async function runHttpsServer() {
-	logger.info('running an HTTPS server...');
+  logger.info("running an HTTPS server...");
 
-	// HTTPS server for the protoo WebSocket server.
-	const tls =
-	{
-		cert: fs.readFileSync(config.https.tls.cert),
-		key: fs.readFileSync(config.https.tls.key)
-	};
+  // HTTPS server for the protoo WebSocket server.
+  const tls = {
+    cert: fs.readFileSync(config.https.tls.cert),
+    key: fs.readFileSync(config.https.tls.key),
+  };
 
-	httpsServer = https.createServer(tls, app);
+  httpsServer = https.createServer(tls, app);
 
-	await new Promise((resolve) => {
-		httpsServer.listen(
-			Number(config.https.listenPort), config.https.listenIp, resolve);
+  await new Promise((resolve) => {
+    httpsServer.listen(
+      Number(config.https.listenPort),
+      config.https.listenIp,
+      resolve
+    );
 
-		console.log(colors.green(`Https Server Started at ${config.https.listenPort}`));
-		// var dir = path.join(__dirname, 'public');
+    console.log(
+      colors.green(`Https Server Started at ${config.https.listenPort}`)
+    );
+    // var dir = path.join(__dirname, 'public');
 
-		// app.use(express.static(dir));
-		// const io = require("socket.io")(httpsServer, {
-		// 	transports: ["websocket", "polling"],
-		// });
-		// io.on('connection', (client) => {
-		// 	require('./sockets.js').test(client);
-		// })
-		require('./startup/routes.js')(app);
-		
-	});
+    // app.use(express.static(dir));
+    // const io = require("socket.io")(httpsServer, {
+    // 	transports: ["websocket", "polling"],
+    // });
+    // io.on('connection', (client) => {
+    // 	require('./sockets.js').test(client);
+    // })
+    require("./startup/routes.js")(app);
+  });
 }
 
 /**
  * Create a protoo WebSocketServer to allow WebSocket connections from browsers.
  */
 async function runProtooWebSocketServer() {
-	logger.info('running protoo WebSocketServer...');
+  logger.info("running protoo WebSocketServer...");
 
-	// Create the protoo WebSocket server.
-	protooWebSocketServer = new protoo.WebSocketServer(httpsServer,
-		{
-			maxReceivedFrameSize: 960000, // 960 KBytes.
-			maxReceivedMessageSize: 960000,
-			fragmentOutgoingMessages: true,
-			fragmentationThreshold: 960000
-		});
+  // Create the protoo WebSocket server.
+  protooWebSocketServer = new protoo.WebSocketServer(httpsServer, {
+    maxReceivedFrameSize: 960000, // 960 KBytes.
+    maxReceivedMessageSize: 960000,
+    fragmentOutgoingMessages: true,
+    fragmentationThreshold: 960000,
+  });
 
-	// Handle connections from clients.
-	protooWebSocketServer.on('connectionrequest', (info, accept, reject) => {
-		// The client indicates the roomId and peerId in the URL query.
+  // Handle connections from clients.
+  protooWebSocketServer.on("connectionrequest", (info, accept, reject) => {
+    // The client indicates the roomId and peerId in the URL query.
 
-		console.log("Got a request")
+    console.log("Got a request");
 
-		const u = url.parse(info.request.url, true);
-		const roomId = u.query['roomId'];
-		const peerId = u.query['peerId'];
+    const u = url.parse(info.request.url, true);
+    const roomId = u.query["roomId"];
+    const peerId = u.query["peerId"];
 
-		if (!roomId || !peerId) {
-			reject(400, 'Connection request without roomId and/or peerId');
+    if (!roomId || !peerId) {
+      reject(400, "Connection request without roomId and/or peerId");
 
-			return;
-		}
+      return;
+    }
 
-		logger.info(
-			'protoo connection request [roomId:%s, peerId:%s, address:%s, origin:%s]',
-			roomId, peerId, info.socket.remoteAddress, info.origin);
+    logger.info(
+      "protoo connection request [roomId:%s, peerId:%s, address:%s, origin:%s]",
+      roomId,
+      peerId,
+      info.socket.remoteAddress,
+      info.origin
+    );
 
-		// Serialize this code into the queue to avoid that two peers connecting at
-		// the same time with the same roomId create two separate rooms with same
-		// roomId.
-		queue.push(async () => {
-			const room = await getOrCreateRoom({ roomId });
+    // Serialize this code into the queue to avoid that two peers connecting at
+    // the same time with the same roomId create two separate rooms with same
+    // roomId.
+    queue
+      .push(async () => {
+        const room = await getOrCreateRoom({ roomId });
 
-			// Accept the protoo WebSocket connection.
-			const protooWebSocketTransport = accept();
+        // Accept the protoo WebSocket connection.
+        const protooWebSocketTransport = accept();
 
-			room.handleProtooConnection({ peerId, protooWebSocketTransport });
-		})
-			.catch((error) => {
-				logger.error('room creation or room joining failed:%o', error);
+        room.handleProtooConnection({ peerId, protooWebSocketTransport });
+      })
+      .catch((error) => {
+        logger.error("room creation or room joining failed:%o", error);
 
-				reject(error);
-			});
-	});
+        reject(error);
+      });
+  });
 }
 
 /**
  * Get next mediasoup Worker.
  */
 function getMediasoupWorker() {
-	const worker = mediasoupWorkers[nextMediasoupWorkerIdx];
+  const worker = mediasoupWorkers[nextMediasoupWorkerIdx];
 
-	if (++nextMediasoupWorkerIdx === mediasoupWorkers.length)
-		nextMediasoupWorkerIdx = 0;
+  if (++nextMediasoupWorkerIdx === mediasoupWorkers.length)
+    nextMediasoupWorkerIdx = 0;
 
-	return worker;
+  return worker;
 }
 
 /**
  * Get a Room instance (or create one if it does not exist).
  */
 async function getOrCreateRoom({ roomId }) {
-	let room = rooms.get(roomId);
+  let room = rooms.get(roomId);
 
-	// If the Room does not exist create a new one.
-	if (!room) {
-		logger.info('creating a new Room [roomId:%s]', roomId);
+  // If the Room does not exist create a new one.
+  if (!room) {
+    logger.info("creating a new Room [roomId:%s]", roomId);
 
-		const mediasoupWorker = getMediasoupWorker();
+    const mediasoupWorker = getMediasoupWorker();
 
-		room = await Room.create({ mediasoupWorker, roomId });
+    room = await Room.create({ mediasoupWorker, roomId });
 
-		rooms.set(roomId, room);
-		room.on('close', () => rooms.delete(roomId));
-	}
+    rooms.set(roomId, room);
+    room.on("close", () => rooms.delete(roomId));
+  }
 
-	return room;
+  return room;
 }

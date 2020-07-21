@@ -42,7 +42,7 @@ module.exports = (app) => {
         });
       }
     } catch (err) {
-      console.log(err);
+      res.status(406).send(err);
     }
   });
 
@@ -56,7 +56,7 @@ module.exports = (app) => {
       );
       res.send(propertyManager);
     } catch (err) {
-      console.log(err);
+      res.status(406).send(err);
     }
   });
 
@@ -82,36 +82,56 @@ module.exports = (app) => {
           });
         });
     } catch (err) {
-      console.log(err);
+      res.status(406).send(err);
     }
   });
 
-  app.post("/updatePropertyManager", function (req, res) {
+  app.post("/updatePropertyManager", async function (req, res) {
     try {
-      console.log("Update Body" + JSON.stringify(req.body));
-      propertyManager_Schema.findOneAndUpdate(
-        { _id: req.body.id },
-        req.body,
-        function (err, doc) {
-          if (err) {
-            console.log(err);
-            res.status(400).send({
-              error: {
-                message: "Unable to Update",
-                error: err,
-              },
-            });
-          } else {
-            res.status(200).send({
-              sucess: {
-                message: "Sucessfully Updated",
-              },
-            });
-          }
-        }
+      const { _id, fullName, email, role, phoneNumber } = req.body;
+
+      const prp = await propertyManager_Schema.findByIdAndUpdate(
+        _id,
+        {
+          fullName,
+          email,
+          role,
+          phoneNumber,
+        },
+        { new: true }
       );
+      if (!prp)
+        return res
+          .status(404)
+          .send("The Property Manager with the given ID not found.");
+
+      res.status(200).send(prp);
+
+      // console.log("Update Body" + JSON.stringify(req.body));
+      // propertyManager_Schema.updateOne(
+      //   { _id: req.body.id },
+      //   req.body,
+      //   function (err, doc) {
+      //     if (err) {
+      //       console.log(err);
+      //       res.status(400).send({
+      //         error: {
+      //           message: "Unable to Update",
+      //           error: err,
+      //         },
+      //       });
+      //     } else {
+      //       res.status(200).send({
+      //         sucess: {
+      //           message: "Sucessfully Updated",
+      //         },
+      //       });
+      //     }
+      //   },
+      //   { upset: true }
+      // );
     } catch (err) {
-      console.log(err);
+      res.status(406).send(err);
     }
   });
 };

@@ -59,7 +59,7 @@ module.exports = (app) => {
         .sort("index");
       res.send(contact);
     } catch (err) {
-      console.log(err);
+      res.status(406).send(err);
     }
   });
   //Update API
