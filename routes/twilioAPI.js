@@ -49,8 +49,12 @@ module.exports = (app) => {
       )
         .then((messages) => {
           console.log("Messages sent!");
+          res.status(200).send("Messages sent");
         })
-        .catch((err) => console.error(err));
+        .catch((err) => {
+          console.error(err);
+          res.status(200).send(err);
+        });
     } catch (err) {
       res.status(406).send(err);
     }
