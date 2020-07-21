@@ -9,7 +9,7 @@ module.exports = (app) => {
         email,
         role,
       });
-      if (!check) {
+      if (check) {
         res.status(400).send({
           error: {
             message: "Email Already Exist",
@@ -42,7 +42,7 @@ module.exports = (app) => {
         });
       }
     } catch (err) {
-      console.log(err);
+      res.status(406).send(err)
     }
   });
 
@@ -56,7 +56,7 @@ module.exports = (app) => {
       );
       res.send(propertyManager);
     } catch (err) {
-      console.log(err);
+      res.status(406).send(err)
     }
   });
 
@@ -82,7 +82,7 @@ module.exports = (app) => {
           });
         });
     } catch (err) {
-      console.log(err);
+      res.status(406).send(err)
     }
   });
 
@@ -111,7 +111,7 @@ module.exports = (app) => {
         }
       );
     } catch (err) {
-      console.log(err);
+      res.status(406).send(err)
     }
   });
 };
