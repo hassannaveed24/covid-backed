@@ -158,12 +158,12 @@ async function runHttpsServer() {
 		// var dir = path.join(__dirname, 'public');
 
 		// app.use(express.static(dir));
-		const io = require("socket.io")(httpsServer, {
-			transports: ["websocket", "polling"],
-		});
-		io.on('connection', (client) => {
-			require('./sockets.js').test(client);
-		})
+		// const io = require("socket.io")(httpsServer, {
+		// 	transports: ["websocket", "polling"],
+		// });
+		// io.on('connection', (client) => {
+		// 	require('./sockets.js').test(client);
+		// })
 		require('./startup/routes.js')(app, io);
 		
 	});
