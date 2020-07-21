@@ -9,7 +9,7 @@ module.exports = (app) => {
         email,
         role,
       });
-      if (!check) {
+      if (check) {
         res.status(400).send({
           error: {
             message: "Email Already Exist",
