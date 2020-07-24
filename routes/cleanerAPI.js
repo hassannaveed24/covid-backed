@@ -50,16 +50,16 @@ module.exports = (app) => {
       res.status(406).send(err);
     }
   });
-  app.get("/viewOneCleaner/:_id", async function (req, res) {
+  app.get("/viewOneCleaner/:_id", async (req, res) => {
     try {
-      let cleaner = [];
-      console.log("Body", req.params);
-      var cleanerID = req.params._id;
-      cleaner = await cleaner_Schema.findById({ _id: cleanerID }, function (
-        err,
-        cleaner
-      ) {});
-      res.send(cleaner);
+      const cleaner = await cleaner_Schema.findById(req.params._id);
+      if (!cleaner)
+        res.status(404).send({
+          failure: {
+            message: "Unable to find cleaner with given ID.",
+          },
+        });
+      res.status(200).send(cleaner);
     } catch (err) {
       res.status(406).send(err);
     }
