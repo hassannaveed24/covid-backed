@@ -13,7 +13,6 @@ module.exports = (app, io) => {
   require("../routes/propertyManagerAPI")(app);
   require("../routes/thresholdAPI")(app);
   require("../routes/twilioAPI")(app);
-
   require("../routes/mediasoupAPI")(app);
 
   /**
