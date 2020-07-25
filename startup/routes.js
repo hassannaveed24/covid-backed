@@ -1,11 +1,11 @@
 const bodyParser = require("body-parser");
 
-module.exports = (app, httpsServer) => {
+module.exports = (app, io) => {
   app.use(bodyParser.json());
 
   require("../db/conn");
   require("../routes/Test.js")(app);
-  require("../routes/potentialPatientAPI")(app, httpsServer);
+  require("../routes/potentialPatientAPI")(app, io);
 
   require("../routes/cleanerAPI")(app);
   require("../routes/contactListApi")(app);

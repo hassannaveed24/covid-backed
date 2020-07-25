@@ -133,6 +133,8 @@ async function createExpressApp() {
   app = express();
   app.use(cors());
   app.options("*", cors());
+  // app.use(bodyParser.urlencoded({ extended: true }));
+  // app.use(bodyParser.json());
 
   console.log("next");
 }
@@ -162,16 +164,73 @@ async function runHttpsServer() {
     console.log(
       colors.green(`Https Server Started at ${config.https.listenPort}`)
     );
-    // var dir = path.join(__dirname, 'public');
 
-    // app.use(express.static(dir));
-    // const io = require("socket.io")(httpsServer, {
-    // 	transports: ["websocket", "polling"],
-    // });
+
+
+    socketio = require('socket.io')
+    var options = {
+      key: tls.key,
+      cert: tls.cert,
+      origins: '*:*',
+      //  requestCert : true,
+      //  rejectUnauthorized : true,
+      secureProtocol: 'TLSv1_method',
+      ciphers: [
+        'ECDHE-RSA-AES128-GCM-SHA256',
+        'ECDHE-ECDSA-AES128-GCM-SHA256',
+        'ECDHE-RSA-AES256-GCM-SHA384',
+        'ECDHE-ECDSA-AES256-GCM-SHA384',
+        'DHE-RSA-AES128-GCM-SHA256',
+        'ECDHE-RSA-AES128-SHA256',
+        'DHE-RSA-AES128-SHA256',
+        'ECDHE-RSA-AES256-SHA384',
+        'DHE-RSA-AES256-SHA384',
+        'ECDHE-RSA-AES256-SHA256',
+        'DHE-RSA-AES256-SHA256',
+        'HIGH',
+        '!aNULL',
+        '!eNULL',
+        '!EXPORT',
+        '!DES',
+        '!RC4',
+        '!MD5',
+        '!PSK',
+        '!SRP',
+        '!CAMELLIA'
+      ].join(':'),
+      honorCipherOrder: true
+    };
+    app2 = express();
+    app2.use(cors());
+    app2.options("*", cors());
+
+    server = https.createServer(options, app2).listen(8001);
+    var io = socketio.listen(server);
+
+    io.on('connection', (client) => {
+      console.log("Connected");
+      // setInterval(() => {
+      //   io.sockets.emit("broadcastPotentialPatient", {h1:"hello"});
+      // }, 3000);
+
+
+      client.on('disconnect', (client) => {
+        console.log("disconnect")
+        //	require('./sockets.js').test(client);
+      });
+      //io.sockets.emit("broadcastPotentialPatient", "hello");
+      //	require('./sockets.js').test(client);
+    });
+
+    // io.sockets.emit("broadcastPotentialPatient", "hello");
+
+
+    // const io = require("socket.io")(httpsServer);
     // io.on('connection', (client) => {
-    // 	require('./sockets.js').test(client);
+    //   console.log("Connected")
+    //   //require('./sockets.js').test(client);
     // })
-    require("./startup/routes.js")(app);
+    require("./startup/routes.js")(app,io);
   });
 }
 
