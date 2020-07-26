@@ -10,7 +10,7 @@ module.exports = (app, io) => {
   });
 
   require("../routes/potentialPatientAPI")(app, io);
-  
+
   // CRUD Cleaner's API
   require("../routes/cleanerAPI")(app);
 
@@ -19,16 +19,16 @@ module.exports = (app, io) => {
 
   //twillio API
   require("../routes/twilioAPI")(app);
-  
+
   // Contact List API
   require("../routes/contactListApi")(app);
 
 
-  
+
   require("../routes/noteAPI")(app);
-  
+
   require("../routes/thresholdAPI")(app);
-  
+
   require("../routes/mediasoupAPI")(app);
 
   /**
@@ -36,7 +36,7 @@ module.exports = (app, io) => {
    */
   app.use((error, req, res, next) => {
     if (error) {
-      logger.warn("Express app %s", String(error));
+      // logger.warn("Express app %s", String(error));
 
       error.status = error.status || (error.name === "TypeError" ? 400 : 500);
 
