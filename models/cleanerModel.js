@@ -3,13 +3,13 @@ const mongoose = require("mongoose");
 const cleaner_Schema = mongoose.model(
   "cleaningSecurity",
   new mongoose.Schema({
-    fullName: String,
-    email: String,
+    fullName: { type: String, required: "Full Name is required" },
+    email: { type: String, required: "Email is required" },
     role: {
       type: String,
       enum: ["Cleaning Team", "Security Team"],
     },
-    phoneNumber: { type: String, required: "phone number is required" }
+    phoneNumber: { type: String, required: "Contact number is required" }
   })
 );
 
