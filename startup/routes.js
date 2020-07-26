@@ -17,12 +17,14 @@ module.exports = (app, io) => {
   // CRUD Property Manager, Employee, Security Officer
   require("../routes/propertyManagerAPI")(app);
 
+  //twillio API
+  require("../routes/twilioAPI")(app);
 
   require("../routes/contactListApi")(app);
   require("../routes/noteAPI")(app);
   
   require("../routes/thresholdAPI")(app);
-  require("../routes/twilioAPI")(app);
+  
   require("../routes/mediasoupAPI")(app);
 
   /**
