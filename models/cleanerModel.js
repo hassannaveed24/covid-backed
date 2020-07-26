@@ -9,7 +9,7 @@ const cleaner_Schema = mongoose.model(
       type: String,
       enum: ["Cleaning Team", "Security Team"],
     },
-    phoneNumber: String,
+    phoneNumber: { type: String, required: "phone number is required" }
   })
 );
 

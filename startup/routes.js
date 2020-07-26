@@ -4,7 +4,11 @@ module.exports = (app, io) => {
   app.use(bodyParser.json());
 
   require("../db/conn");
-  require("../routes/Test.js")(app);
+
+  app.get('/', async (req, res) => {
+    res.status(200).send("Server is Working");
+  });
+
   require("../routes/potentialPatientAPI")(app, io);
 
   require("../routes/cleanerAPI")(app);

@@ -1,10 +1,6 @@
 const ticket = require("../models/potentialPatientModel");
 
 module.exports = async (app, io) => {
-  //    const http = await require("http").createServer(app).listen(8080)
-  //     const io = require("socket.io")(http, {
-  //         transports: ["websocket", "polling"],
-  //     })
 
   // get all potential casses
   app.get("/api/getPotentialCase", async (req, res) => {
