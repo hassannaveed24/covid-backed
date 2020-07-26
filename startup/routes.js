@@ -19,8 +19,12 @@ module.exports = (app, io) => {
 
   //twillio API
   require("../routes/twilioAPI")(app);
-
+  
+  // Contact List API
   require("../routes/contactListApi")(app);
+
+
+  
   require("../routes/noteAPI")(app);
   
   require("../routes/thresholdAPI")(app);

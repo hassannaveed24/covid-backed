@@ -66,7 +66,7 @@ module.exports = (app) => {
       if (!req.body._id)
         return res.status(406).send({ message: "No unique id found in request" });
 
-      cleaner_Schema.findByIdAndUpdate(req.body._id, req.body, { new: true }, (err, data) => {
+      cleaner_Schema.findByIdAndUpdate(req.body._id, req.body,{ new:true,runValidators: true, context: 'query' }, (err, data) => {
         if (err)
           return res.status(406).send({ message: errorHandler.getErrorMessage(err) });
         res.status(200).send(data);

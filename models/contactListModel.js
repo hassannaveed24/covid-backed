@@ -7,15 +7,15 @@ const mongoose = require("mongoose");
 const contact_Schema = mongoose.model(
   "contactList",
   new mongoose.Schema({
-    name: String,
+    name: { type: String, required: "Contact name is required" },
     type: {
       type: String,
       enum: ["Office", "Administrator", "Authority", "Subcontractor"],
+      required: "Type is required"
     },
-    description: String,
-    phoneNumber: String,
-    mobileNumber: String,
-    index: { type: Number, default: 1 },
+    phoneNumber: String, //landline number
+    mobileNumber: String, //mobile number
+    index: { type: Number, required: "Priority index is required" }
   })
 );
 
