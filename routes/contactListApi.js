@@ -113,3 +113,4 @@ module.exports = (app) => {
       return res.status(406).send({ message: errorHandler.getErrorMessage(err) });
     }
   });
+}
