@@ -8,6 +8,7 @@ const cleaner_Schema = mongoose.model(
     role: {
       type: String,
       enum: ["Cleaning Team", "Security Team"],
+      required: "Role is required"
     },
     phoneNumber: { type: String, required: "Contact number is required" }
   })

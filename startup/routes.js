@@ -10,11 +10,17 @@ module.exports = (app, io) => {
   });
 
   require("../routes/potentialPatientAPI")(app, io);
-
+  
+  // CRUD Cleaner's API
   require("../routes/cleanerAPI")(app);
+
+  // CRUD Property Manager, Employee, Security Officer
+  require("../routes/propertyManagerAPI")(app);
+
+
   require("../routes/contactListApi")(app);
   require("../routes/noteAPI")(app);
-  require("../routes/propertyManagerAPI")(app);
+  
   require("../routes/thresholdAPI")(app);
   require("../routes/twilioAPI")(app);
   require("../routes/mediasoupAPI")(app);

@@ -1,135 +1,80 @@
-const propertyManager_Schema = require("../models/propertyManagerModel");
-const bcrypt = require("bcrypt");
+const User = require("../models/userModel"),
+  bcrypt = require("bcrypt"),
+  errorHandler = require('../controller/errorHandler');
 
 module.exports = (app) => {
-  app.post("/addPropertyManager", async (req, res) => {
+  app.post("/api/adduser", async (req, res) => {
     try {
       const { email, role } = req.body;
-      const check = await propertyManager_Schema.countDocuments({
-        email,
-        role,
+      if (!req.body.password)
+        return res.status(406).send({ message: "Password is Required" });
+        
+      const check = await User.countDocuments({ email, role });
+      if (check)
+        return res.status(406).send({ message: "Email already exists" });
+
+      var myData = new User(req.body);
+      const password = myData.password;
+      bcrypt.hash("password", 10, function (err, hash) {
+        if (err)
+          return res.status(406).send({ message: errorHandler.getErrorMessage(err) });
+
+        myData.password = hash;
+        myData.save((err, data) => {
+          if (err)
+            return res.status(406).send({ message: errorHandler.getErrorMessage(err) });
+          res.status(200).send(data);
+        });
       });
-      if (check) {
-        res.status(400).send({
-          error: {
-            message: "Email Already Exist",
-          },
-        });
-      } else {
-        var myData = new propertyManager_Schema(req.body);
-        const password = myData.password;
-        bcrypt.hash("password", 10, function (err, hash) {
-          myData.password = hash;
-          console.log(JSON.stringify(req.body));
-          console.log("MY Data" + JSON.stringify(myData));
-          myData
-            .save()
-            .then((item) => {
-              res.status(200).send({
-                sucess: {
-                  message: "Sucessfully Saved",
-                },
-              });
-            })
-            .catch((err) => {
-              res.status(400).send({
-                error: {
-                  message: "Unable to save data",
-                  error: err,
-                },
-              });
-            });
-        });
-      }
     } catch (err) {
       res.status(406).send(err);
     }
   });
 
-  app.get("/viewPropertyManager", async function (req, res) {
+  app.get("/api/allusers", async function (req, res) {
     try {
-      let propertyManager = {};
-      propertyManager = await propertyManager_Schema.find(
-        {},
-        { password: 0 },
-        function (err, propertyManager) {}
-      );
-      res.send(propertyManager);
+      User.find({}, '-password').lean().exec((err, data) => {
+        if (err)
+          return res.status(406).send({ message: errorHandler.getErrorMessage(err) });
+        res.status(200).send(data);
+      });
     } catch (err) {
       res.status(406).send(err);
     }
   });
 
-  app.delete("/deletePropertyManager/:id", function (req, res) {
+  app.delete("/api/deleteUser/:id", function (req, res) {
     try {
       const id = req.params.id;
-      console.log(`ID is ${id}`);
-      propertyManager_Schema
-        .deleteOne({ _id: id })
-        .then((resp) => {
-          res.status(200).send({
-            sucess: {
-              message: "Sucessfully Deleted",
-            },
-          });
-        })
-        .catch((err) => {
-          res.status(400).send({
-            error: {
-              message: "Unable to deleted",
-              error: err,
-            },
-          });
-        });
+
+      User.deleteOne({ _id: id }).exec((err, data) => {
+        if (err)
+          return res.status(406).send({ message: errorHandler.getErrorMessage(err) });
+        res.status(200).send("Deleted");
+      });
     } catch (err) {
       res.status(406).send(err);
     }
   });
 
-  app.post("/updatePropertyManager", async function (req, res) {
+  app.post("/api/updateUser", async function (req, res) {
     try {
       const { _id, fullName, email, role, phoneNumber } = req.body;
+      if (!_id)
+        return res.status(406).send({ message: "No unique id found in request" });
 
-      const prp = await propertyManager_Schema.findByIdAndUpdate(
-        _id,
-        {
-          fullName,
-          email,
-          role,
-          phoneNumber,
-        },
-        { new: true }
-      );
-      if (!prp)
-        return res
-          .status(404)
-          .send("The Property Manager with the given ID not found.");
+      if (req.body.password) {
+        const password = req.body.password;
+        req.body.password = await bcrypt.hash("password", 10);
+      }
 
-      res.status(200).send(prp);
+      User.findByIdAndUpdate(_id, req.body, { new: true }).lean().exec((err, data) => {
+        if (err)
+          return res.status(406).send({ message: errorHandler.getErrorMessage(err) });
+        delete data.password;
+        res.status(200).send(data);
+      });
 
-      // console.log("Update Body" + JSON.stringify(req.body));
-      // propertyManager_Schema.updateOne(
-      //   { _id: req.body.id },
-      //   req.body,
-      //   function (err, doc) {
-      //     if (err) {
-      //       console.log(err);
-      //       res.status(400).send({
-      //         error: {
-      //           message: "Unable to Update",
-      //           error: err,
-      //         },
-      //       });
-      //     } else {
-      //       res.status(200).send({
-      //         sucess: {
-      //           message: "Sucessfully Updated",
-      //         },
-      //       });
-      //     }
-      //   },
-      //   { upset: true }
-      // );
     } catch (err) {
       res.status(406).send(err);
     }
