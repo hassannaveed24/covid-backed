@@ -5,7 +5,7 @@ module.exports = (app, io) => {
 
   require("../db/conn");
 
-  app.get('/', async (req, res) => {
+  app.get("/", async (req, res) => {
     res.status(200).send("Server is Working");
   });
 
@@ -17,13 +17,11 @@ module.exports = (app, io) => {
   // CRUD Property Manager, Employee, Security Officer
   require("../routes/propertyManagerAPI")(app);
 
-  //twillio API
+  //  twillio API
   require("../routes/twilioAPI")(app);
 
   // Contact List API
   require("../routes/contactListApi")(app);
-
-
 
   require("../routes/noteAPI")(app);
 
@@ -37,13 +35,11 @@ module.exports = (app, io) => {
   app.use((error, req, res, next) => {
     if (error) {
       // logger.warn("Express app %s", String(error));
-
-      error.status = error.status || (error.name === "TypeError" ? 400 : 500);
-
-      res.statusMessage = error.message;
-      res.status(error.status).send(String(error));
-    } else {
-      next();
+      //     error.status = error.status || (error.name === "TypeError" ? 400 : 500);
+      //     res.statusMessage = error.message;
+      //     res.status(error.status).send(String(error));
+      //   } else {
+      //     next();
     }
   });
 };

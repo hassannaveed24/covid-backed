@@ -1,4 +1,3 @@
 exports.propertyDetails = {
-    PropertyName: "Saint Jean Sur Rechelue"
-
-}
+  PropertyName: "Saint Jean Sur Rechelue",
+};
