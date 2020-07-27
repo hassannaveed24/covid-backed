@@ -35,11 +35,11 @@ module.exports = (app, io) => {
   app.use((error, req, res, next) => {
     if (error) {
       // logger.warn("Express app %s", String(error));
-      //     error.status = error.status || (error.name === "TypeError" ? 400 : 500);
-      //     res.statusMessage = error.message;
-      //     res.status(error.status).send(String(error));
-      //   } else {
-      //     next();
+      error.status = error.status || (error.name === "TypeError" ? 400 : 500);
+      res.statusMessage = error.message;
+      res.status(error.status).send(String(error));
+    } else {
+      next();
     }
   });
 };

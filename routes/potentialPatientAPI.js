@@ -1,5 +1,4 @@
 const moment = require("moment");
-moment().format();
 const ticket = require("../models/potentialPatientModel");
 
 module.exports = async (app, io) => {
@@ -27,25 +26,66 @@ module.exports = async (app, io) => {
 
   app.get("/api/getChartData", async (req, res) => {
     try {
-      const potentialPatient = await ticket.find().sort("-timestamp").lean();
-      const newCases = potentialPatient.filter((x) => x.status === "new");
+      const newCases = await ticket.find({ status: "new" });
+      const activeTests = await ticket.find({ floor: "2" });
+      const myTickets = await ticket.find({ locationName: "front" });
+
       const timeDiff = (item) => {
         const currentTime = moment();
         const timeStore = moment(item.timestamp);
         return currentTime.diff(timeStore, "h");
       };
-      const newCasesToday = newCases.filter((x) => timeDiff(x) <= 24);
 
-      const points = Array(8).fill(0);
+      const newCasesToday = newCases.filter((x) => timeDiff(x) <= 24);
+      const activeTestsToday = activeTests.filter((x) => timeDiff(x) <= 24);
+      const myTicketsToday = myTickets.filter((x) => timeDiff(x) <= 24);
+
+      const newCasesPoints = Array(8).fill({ interval: "", cases: 0 });
+      const getHour = (i) => (i > 9 ? `${i}:00` : `0${i}:00`);
+      const getInterval = (i) => `${getHour(i * 3)} - ${getHour((i + 1) * 3)}`;
+
       newCasesToday.forEach((x) => {
-        const index = timeDiff(x.timestamp) / 3;
-        points[index] += 1;
+        const i = timeDiff(x.timestamp) / 3;
+        newCasesPoints[i] = {
+          interval: getInterval(i),
+          cases: newCasesPoints[i].cases + 1,
+        };
+      });
+
+      const activeTestsPoints = Array(8).fill({ interval: "", cases: 0 });
+      activeTestsToday.forEach((x) => {
+        const i = timeDiff(x.timestamp) / 3;
+        activeTestsPoints[i] = {
+          interval: getInterval(i),
+          cases: activeTestsPoints[i].cases + 1,
+        };
+      });
+
+      const myTicketsPoints = Array(8).fill({ interval: "", cases: 0 });
+      myTicketsToday.forEach((x) => {
+        const i = timeDiff(x.timestamp) / 3;
+        myTicketsPoints[i] = {
+          interval: getInterval(i),
+          cases: myTicketsPoints[i].cases + 1,
+        };
       });
 
       const response = {
-        new: newCases.length,
-        newToday: newCasesToday.length,
-        newData: points,
+        newCases: {
+          total: newCases.length,
+          today: newCasesToday.length,
+          chart: newCasesPoints,
+        },
+        activeTests: {
+          total: activeTests.length,
+          today: activeTestsToday.length,
+          chart: activeTestsPoints,
+        },
+        myTickets: {
+          total: myTicketsPoints.length,
+          today: myTicketsToday.length,
+          chart: myTicketsPoints,
+        },
       };
 
       res.status(200).send(response);
