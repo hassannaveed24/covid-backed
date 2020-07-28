@@ -23,8 +23,7 @@ module.exports = (app, io) => {
   // Contact List API
   require("../routes/contactListApi")(app);
 
-
-
+  // Notes API
   require("../routes/noteAPI")(app);
 
   require("../routes/thresholdAPI")(app);

@@ -1,4 +1,4 @@
-const ticket = require("../models/potentialPatientModel");
+const ticket = require("../models/tickets");
 
 module.exports = async (app, io) => {
 

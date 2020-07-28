@@ -10,7 +10,7 @@ const ticket = mongoose.model('ticket', new mongoose.Schema({
     },
     timestamp: {
         type: Date,
-        default: new Date
+        default: new Date()
     },
     locationName: String,
     readings: {
@@ -20,7 +20,7 @@ const ticket = mongoose.model('ticket', new mongoose.Schema({
     user_id: String,
     ticketId: String,
     Property: { type: String, default: config.propertyDetails.PropertyName },
-    status: {type: String, enum:["new", "openned", "close"], default:"new"}
+    status: { type: String, enum: ["new", "openned", "close"], default: "new" }
 }));
 
 module.exports = ticket;
