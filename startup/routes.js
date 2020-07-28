@@ -26,6 +26,9 @@ module.exports = (app, io) => {
   // Notes API
   require("../routes/noteAPI")(app);
 
+  // Manage Tickets and assing Tickets
+  require("../routes/ticketManagement")(app, io);
+
   require("../routes/thresholdAPI")(app);
 
   require("../routes/mediasoupAPI")(app);
